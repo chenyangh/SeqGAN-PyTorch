@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import os
+# os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 import random
 import math
 
@@ -22,7 +23,7 @@ from data_iter import GenDataIter, DisDataIter
 # ================== Parameter Definition =================
 
 parser = argparse.ArgumentParser(description='Training Parameter')
-parser.add_argument('--cuda', action='store', default=None, type=int)
+parser.add_argument('--cuda', action='store', default=1, type=int)
 opt = parser.parse_args()
 print(opt)
 

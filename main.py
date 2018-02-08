@@ -36,7 +36,7 @@ POSITIVE_FILE = 'real.data'
 NEGATIVE_FILE = 'gene.data'
 EVAL_FILE = 'eval.data'
 VOCAB_SIZE = 5000
-PRE_EPOCH_NUM = 120
+PRE_EPOCH_NUM = 2
 
 if opt.cuda is not None and opt.cuda >= 0:
     torch.cuda.set_device(opt.cuda)
@@ -56,7 +56,6 @@ d_dropout = 0.75
 d_num_class = 2
 
 
-
 def generate_samples(model, batch_size, generated_num, output_file):
     samples = []
     for _ in range(int(generated_num / batch_size)):
@@ -66,6 +65,7 @@ def generate_samples(model, batch_size, generated_num, output_file):
         for sample in samples:
             string = ' '.join([str(s) for s in sample])
             fout.write('%s\n' % string)
+
 
 def train_epoch(model, data_iter, criterion, optimizer):
     total_loss = 0.
@@ -87,6 +87,7 @@ def train_epoch(model, data_iter, criterion, optimizer):
     data_iter.reset()
     return math.exp(total_loss / total_words)
 
+
 def eval_epoch(model, data_iter, criterion):
     total_loss = 0.
     total_words = 0.
@@ -103,6 +104,7 @@ def eval_epoch(model, data_iter, criterion):
         total_words += data.size(0) * data.size(1)
     data_iter.reset()
     return math.exp(total_loss / total_words)
+
 
 class GANLoss(nn.Module):
     """Reward-Refined NLLLoss Function for adversial training of Gnerator"""
@@ -193,10 +195,10 @@ def main():
     if opt.cuda:
         dis_criterion = dis_criterion.cuda()
     for total_batch in range(TOTAL_BATCH):
-        ## Train the generator for one step
+        # Train the generator for one step
         for it in range(1):
             samples = generator.sample(BATCH_SIZE, g_sequence_len)
-            # construct the input to the genrator, add zeros before samples and delete the last column
+            # construct the input to the generator, add zeros before samples and delete the last column
             zeros = torch.zeros((BATCH_SIZE, 1)).type(torch.LongTensor)
             if samples.is_cuda:
                 zeros = zeros.cuda()
@@ -225,5 +227,7 @@ def main():
             dis_data_iter = DisDataIter(POSITIVE_FILE, NEGATIVE_FILE, BATCH_SIZE)
             for _ in range(2):
                 loss = train_epoch(discriminator, dis_data_iter, dis_criterion, dis_optimizer)
+
+
 if __name__ == '__main__':
     main()
